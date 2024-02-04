@@ -27,8 +27,8 @@ pub fn load_config() -> Result<Vec<TimeRange>, XlsxError> {
   let mut dinner_times: Vec<TimeRange> = vec![];
 
   for index in 0..2 {
-    let start_index = index;
-    let end_index = index + 1;
+    let start_index = index * 2;
+    let end_index = start_index + 1;
     let start_row = &rows[start_index][1];
     let end_row = &rows[end_index][1];
 
