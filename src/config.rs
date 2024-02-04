@@ -3,9 +3,10 @@ use inquire;
 use rust_xlsxwriter::{Workbook, XlsxError};
 use calamine::{open_workbook, DataType, Reader, Xlsx};
 
-const CONFIG_FILE_NAME: &str = "config.xlsx";
+pub const CONFIG_FILE_NAME: &str = "config.xlsx";
 
 /// 时间区间
+#[derive(Debug)]
 pub struct TimeRange {
   /// 开始时间
   pub start: String,
@@ -30,7 +31,7 @@ pub fn load_config() -> Result<Vec<TimeRange>, XlsxError> {
     let end_index = index + 1;
     let start_row = &rows[start_index][1];
     let end_row = &rows[end_index][1];
-    println!("index={}, star={}, end={}", index, start_row, end_row);
+
     if let (DataType::String(start), DataType::String(end)) = (start_row, end_row) {
       dinner_times.push(TimeRange { start: start.to_string(), end: end.to_string() });
     }
