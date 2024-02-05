@@ -140,6 +140,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "figures-rs"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f52f58064b067e2965dd6f10fd34f228048759cbad7b515208e9d78b55158a4c"
+
+[[package]]
 name = "flate2"
 version = "1.0.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -256,6 +262,7 @@ version = "0.1.0"
 dependencies = [
  "calamine",
  "colored",
+ "figures-rs",
  "inquire",
  "rust_xlsxwriter",
  "time",

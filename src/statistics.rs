@@ -1,5 +1,6 @@
 use calamine::{open_workbook, Error as ReaderError, Reader, Xlsx};
 use colored::*;
+use figures_rs;
 use rust_xlsxwriter::{Workbook, Worksheet};
 use std::collections::HashMap;
 use std::error::Error;
@@ -132,8 +133,8 @@ pub fn stat_file(file_path: String, dinner_times: &Vec<TimeRange>) -> Result<(),
     workbook.push_worksheet(stat_sheet);
     workbook.save(&filename)?;
 
-    println!("{}", "处理完成！".green());
-    println!("结果导出为：{}", filename.blue());
+    println!("{} {}", figures_rs::TICK.green(), "处理完成！".green());
+    println!("{} 结果导出为：{}", figures_rs::INFO.blue(), filename.blue());
 
     Ok(())
 }

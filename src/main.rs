@@ -1,9 +1,9 @@
 use std::error::Error;
 
 mod config;
+mod dinner;
 mod source;
 mod statistics;
-mod dinner;
 mod user;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -12,6 +12,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let source_path = source::get_source_file()?;
 
     statistics::stat_file(source_path, &dinner_times)?;
-    
+
     Ok(())
 }

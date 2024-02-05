@@ -1,4 +1,5 @@
 use colored::*;
+use figures_rs;
 use inquire;
 use std::error::Error;
 use std::fmt;
@@ -29,7 +30,11 @@ pub fn get_source_file() -> Result<String, Box<dyn Error>> {
     }
 
     // 如果默认文件不存在，通知用户
-    println!("{}", "未发现默认数据文件 source.xlsx".yellow());
+    println!(
+        "{} {}",
+        figures_rs::WARNING,
+        "未发现默认数据文件 source.xlsx".yellow()
+    );
 
     // 选择其他文件的占位选择值
     let value_other = "other";

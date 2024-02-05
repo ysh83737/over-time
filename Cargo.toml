@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 calamine = "0.23.1"
 colored = "2.1.0"
+figures-rs = "0.0.1"
 inquire = "0.6.2"
 rust_xlsxwriter = "0.62.0"
 time = { version = "0.3.34", features = ["macros", "parsing", "local-offset", "formatting"] }
