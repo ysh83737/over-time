@@ -1,65 +1,79 @@
+use inquire;
+use std::error::Error;
 use std::fmt;
 use std::fs;
-use std::io;
-use inquire;
+use std::iter;
 
 use crate::config::CONFIG_FILE_NAME;
 
+/// 文件选项
 #[derive(Debug)]
-struct Option {
+struct FileOption {
   value: String,
   label: String,
 }
 
-impl fmt::Display for Option {
+impl fmt::Display for FileOption {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-      write!(f, "{}", self.label)
+    write!(f, "{}", self.label)
   }
 }
 
-pub fn get_source_file() -> Result<String, io::Error> {
-  let file_name = "source.xlsx";
-  let file_metadata = fs::metadata(file_name);
-
-  if let Ok(_) = file_metadata {
-    return Ok(file_name.to_string());
+/// 从用户目录或交互式选择获取数据源文件的路径
+pub fn get_source_file() -> Result<String, Box<dyn Error>> {
+  // 尝试找到默认的源文件
+  let file_name = String::from("source.xlsx");
+  if fs::metadata(&file_name).is_ok() {
+    return Ok(file_name);
   }
 
+  // 如果默认文件不存在，通知用户
   println!("未发现默认数据文件 source.xlsx");
 
-  let dirs: Vec<_> = fs::read_dir(".")?.collect();
+  // 选择其他文件的占位选择值
+  let value_other = "other";
 
-  let mut xlsxes: Vec<Option> = vec![];
+  // 搜索当前目录的所有.xslx文件，并添加选项以选取其他文件
+  let xlsxes = fs::read_dir(".")?
+    .filter_map(Result::ok)
+    .filter_map(|entry| {
+      let name = entry.file_name().into_string().ok()?;
+      if name.ends_with(".xlsx") && name != CONFIG_FILE_NAME {
+        Some(FileOption {
+          value: name.clone(),
+          label: name,
+        })
+      } else {
+        None
+      }
+    })
+    .chain(iter::once(FileOption {
+      value: value_other.to_string(),
+      label: String::from("上面没有，选择其它文件"),
+    }))
+    .collect::<Vec<_>>();
 
-  for dir in dirs {
-    let name = match dir?.file_name().into_string() {
-      Ok(s) => s,
-      Err(err) => return Err(io::Error::new(io::ErrorKind::Other, err.to_str().unwrap())),
-    };
-    if name.ends_with(".xlsx") && !name.eq(CONFIG_FILE_NAME) {
-      let value = name;
-      let label = value.clone();
-      xlsxes.push(Option { value, label });
-    }
+  // 通过交互式菜单让用户选择文件
+  let selected = inquire::Select::new("请选择数据文件", xlsxes).prompt()?;
+  let mut value = selected.value;
+
+  // 如果用户选择了其他，提供一个文本接口来输入文件路径
+  if value == value_other {
+    let messages = vec![
+      String::from("选择文件"),
+      "=".repeat(50),
+      String::from("\n"),
+      " ".repeat(16),
+      String::from("请拖拽一个文件到此处"),
+      String::from("\n"),
+      "=".repeat(50),
+      String::from("\n"),
+    ];
+    let message = messages.join("\n");
+    let text = inquire::Text::new(&message).prompt()?;
+    value = text.replace("'", "");
   }
 
-  let value_other = String::from("other");
-  xlsxes.push(Option {
-    value: value_other.clone(),
-    label: String::from("上面没有，选择其它文件")
-  });
-
-  let mut result = match inquire::Select::new("请选择数据文件", xlsxes).prompt() {
-    Ok(r) => r.value,
-    Err(_) => return Err(io::Error::new(io::ErrorKind::Other, "选择文件错误")),
-  };
-
-  if result.eq(&value_other) {
-    result = match inquire::Text::new("选择文件\n=====================================================\n\n\n                请拖拽一个文件到此处\n\n\n=====================================================\n").prompt() {
-      Ok(r) => r,
-      Err(_) => return Err(io::Error::new(io::ErrorKind::Other, "选择文件错误")),
-    }.replace("'", "");
-  }
-
-  return Ok(result);
+  // 返回用户选择或输入的文件路径
+  Ok(value)
 }
