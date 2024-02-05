@@ -102,7 +102,10 @@ pub fn stat_file(file_path: String, dinner_times: &Vec<TimeRange>) -> Result<(),
   let date_time = now.format(template).unwrap();
   let filename = format!("汇总结果_{}.xlsx", date_time);
 
-  let _ = workbook.save(filename);
+  let _ = workbook.save(&filename);
+
+  println!("处理完成！");
+  println!("结果导出为：{}", filename);
 
   return Ok(())
 }
