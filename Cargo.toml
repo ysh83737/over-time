@@ -9,4 +9,4 @@ edition = "2021"
 calamine = "0.23.1"
 inquire = "0.6.2"
 rust_xlsxwriter = "0.62.0"
-time = { version = "0.3.34", features = ["macros", "parsing", "local-offset"] }
+time = { version = "0.3.34", features = ["macros", "parsing", "local-offset", "formatting"] }

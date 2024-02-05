@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use calamine::{open_workbook, Reader, Xlsx, Error};
 use rust_xlsxwriter::{Workbook, Worksheet};
 use time::OffsetDateTime;
+use time::macros::format_description;
 
 use crate::config::TimeRange;
 use crate::user::User;
@@ -97,15 +98,11 @@ pub fn stat_file(file_path: String, dinner_times: &Vec<TimeRange>) -> Result<(),
 
   let now = OffsetDateTime::now_local().unwrap();
 
-  let _ = workbook.save(format!(
-    "汇总结果_{}_{}_{}_{}_{}_{}.xlsx",
-    now.year(),
-    now.month(),
-    now.day(),
-    now.hour(),
-    now.minute(),
-    now.second(),
-  ));
+  let template = format_description!("[year]_[month]_[day]_[hour]_[minute]_[second]");
+  let date_time = now.format(template).unwrap();
+  let filename = format!("汇总结果_{}.xlsx", date_time);
+
+  let _ = workbook.save(filename);
 
   return Ok(())
 }
