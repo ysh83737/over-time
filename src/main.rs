@@ -1,4 +1,4 @@
-use rust_xlsxwriter::XlsxError;
+use std::error::Error;
 
 mod config;
 mod source;
@@ -6,7 +6,7 @@ mod statistics;
 mod dinner;
 mod user;
 
-fn main() -> Result<(), XlsxError> {
+fn main() -> Result<(), Box<dyn Error>> {
     let dinner_times = config::load_config()?;
 
     let source_path = source::get_source_file()?;
