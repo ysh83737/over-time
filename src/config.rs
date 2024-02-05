@@ -1,4 +1,5 @@
 use calamine::{open_workbook, DataType, Reader, Xlsx};
+use colored::*;
 use inquire;
 use rust_xlsxwriter::{Workbook as WriterWorkbook, XlsxError as WriterError};
 use std::error::Error;
@@ -45,7 +46,7 @@ pub fn load_config() -> Result<Vec<TimeRange>, Box<dyn Error>> {
 /// 打开或在不存在时创建`config.xlsx`
 fn get_config_workbook() -> Result<Xlsx<io::BufReader<fs::File>>, Box<dyn Error>> {
     if fs::metadata(CONFIG_FILE_NAME).is_err() {
-        println!("未检测到配置文件 config.xlsx");
+        println!("{}", "未检测到配置文件 config.xlsx".yellow());
 
         let result = inquire::Confirm::new("是否生成默认配置文件？")
             .with_default(true)
@@ -53,10 +54,10 @@ fn get_config_workbook() -> Result<Xlsx<io::BufReader<fs::File>>, Box<dyn Error>
             .unwrap_or(true);
 
         if result {
-            println!("生成中...");
+            println!("{}", "生成中...".blue());
             create_config_workbook()?;
-            println!("生成成功！");
-            println!("请修改配置后重新执行");
+            println!("{}", "生成成功！".green());
+            println!("{}", "请修改配置后重新执行".magenta());
             return Err(Box::new(WriterError::CustomError(String::from(
                 "请修改配置后重新执行",
             ))));
