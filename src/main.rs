@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let source_path = source::get_source_file()?;
 
-    let _ = statistics::stat_file(source_path, &dinner_times);
+    statistics::stat_file(source_path, &dinner_times)?;
     
     Ok(())
 }

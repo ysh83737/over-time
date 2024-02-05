@@ -1,4 +1,4 @@
-use time::error::Parse;
+use std::error::Error;
 
 use crate::dinner::calc_overtime_exclude_dinner;
 use crate::config::TimeRange;
@@ -15,18 +15,19 @@ pub struct User {
 }
 
 impl User {
-  pub fn new() -> User {
+  pub fn new(id: String, name: String, depart: String) -> User {
     User {
-      id: String::from(""),
-      name: String::from(""),
-      depart: String::from(""),
+      id,
+      name,
+      depart,
       normal: 0.0,
       weekend: 0.0,
       holiday: 0.0,
       total: 0.0,
     }
   }
-  pub fn add(&mut self, otype: &String, start: &String, end: &String, dinner_times: &Vec<TimeRange>) -> Result<f64, Parse> {
+  pub fn add(&mut self, otype: &String, start: &String, end: &String, dinner_times: &Vec<TimeRange>) -> Result<f64, Box<dyn Error>> {
+    // 计算实际加班时长，保留2位小数
     let time = (calc_overtime_exclude_dinner(start, end, dinner_times)?.as_seconds_f64() / 60.0 / 60.0 * 100.0).round() / 100.0;
     
     match otype.as_str() {
